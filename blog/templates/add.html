@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% from "form_macros.html" import render_field %}}
+{% block body %}
+<form action="" method='POST'>
+  {{ form.hidden_tag() }}
+  <div class="form-group">
+    {{ form.author.label }} {{ form.author(readonly="readonly", value=current_user.adminname)}}
+  </div>
+  <div class="form-group">
+    {{ render_field(form.title, class="form-control") }}
+  </div>
+  <div class="form-group">
+  	{{ form.content.label }}
+  	{{ form.content(class="form-control", row="100")}}
+    {# {{ render_field(form.content, class="form-control", row="100") }} #}
+  </div>
+  <button type="submit" class="btn btn-primary">publish</button>
+</form>
+{% endblock %}
