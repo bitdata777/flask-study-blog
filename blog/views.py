@@ -23,24 +23,39 @@ login_manager.login_view = 'login'
 @app.route('/')
 def index():
     post = Post.query.order_by(Post.id.desc()).first()
-    return render_template('post.html', post=post)
+    if post:
+        previous = get_previous(post)
+        newer = get_newer(post)
+        return render_template('post.html', post=post, previous=previous,
+                               newer=newer)
+    return render_template('post.html')
 
 
 @app.route('/<title>')
 def post(title):
     post = Post.query.filter_by(title=title).first()
+    previous = get_previous(post)
+    newer = get_newer(post)
+    return render_template('post.html', post=post, previous=previous,
+                           newer=newer)
 
-    offset = Post.query.with_entities(Post.id).filter_by(title=post.title).\
+
+def get_offset(post, pager):
+    offset = Post.query.with_entities(Post.id).filter_by(title=post.title). \
         first().id
-    previous = Post.query.order_by(Post.id.asc()).limit(1).offset(offset-2).\
-        first()
-    newer = Post.query.order_by(Post.id.asc()).limit(1).offset(offset).\
-        first()
-    print("-"*30)
-    print(" >>>>> ", previous)
-    print(" >>>>> ", newer)
-    print("-" * 30)
-    return render_template('post.html', post=post, previous=previous, newer=newer)
+    if pager == 'previous':
+        return offset - 2
+    return offset
+
+
+def get_previous(post):
+    offset = get_offset(post, 'previous')
+    return Post.query.order_by(Post.id.asc()).limit(1).offset(offset).first()
+
+
+def get_newer(post):
+    offset = get_offset(post, 'newer')
+    return Post.query.order_by(Post.id.asc()).limit(1).offset(offset).first()
 
 
 @app.route('/add', methods=['GET', 'POST'])

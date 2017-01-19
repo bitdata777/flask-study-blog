@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+{% if post %}
 <div class="row">
   <div class="page-header">
     <h1>{{ post.title }}</h1>{{ post.date }}
@@ -8,10 +9,11 @@
 <div class="row">
   {{ post.content | markdown }}
 </div>
+{% endif %}
 <div class="row">
   <nav>
     <ul class="pager">
-      {% if previous.title != post.title %}
+      {% if previous and previous.title != post.title %}
       <li class="previous"><a href="/{{previous.title}}"><span aria-hidden="true"&larr></span> Older</a></li>
       {% else %}
       <li class="previous disabled"><a href="#"><span aria-hidden="true"&larr></span> Older</a></li>
