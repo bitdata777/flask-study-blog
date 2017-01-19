@@ -34,3 +34,9 @@ class AddForm(Form):
     title = StringField('title', validators=[DataRequired()])
     content = TextAreaField('content', validators=[DataRequired()])
     author = StringField('author', validators=[DataRequired()])
+
+
+class ModifyForm(Form):
+    title = StringField('title', validators=[DataRequired()])
+    content = TextAreaField('content', validators=[DataRequired()])
+    author = StringField('author', validators=[DataRequired()])

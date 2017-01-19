@@ -7,13 +7,13 @@
     {{ form.author.label }} {{ form.author(readonly="readonly", value=current_user.adminname)}}
   </div>
   <div class="form-group">
-    {{ render_field(form.title, class="form-control") }}
+    {{ render_field(form.title, class="form-control", id="modify-title") }}
   </div>
   <div class="form-group">
   	{{ form.content.label }}
-  	{{ form.content(class="form-control", row="100")}}
+  	{{ form.content(class="form-control", row="100", id="modify-content")}}
     {# {{ render_field(form.content, class="form-control", row="100") }} #}
   </div>
-  <button type="submit" class="btn btn-success">publish</button>
+  <a type="button" class="btn btn-success" id="modify-btn">publish</a>
 </form>
 {% endblock %}

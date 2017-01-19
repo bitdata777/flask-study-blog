@@ -4,6 +4,13 @@
 <div class="row">
   <div class="page-header">
     <h1>{{ post.title }}</h1>{{ post.date }}
+    {% if current_user.is_authenticated %}
+    <div class="btn-group" role="group" aria-label="...">
+      <a href="/{{post.title}}/modify" type="button" class="btn btn-warning btn-xs">modify</a>
+      <button type="button" class="btn btn-danger btn-xs" id="delete-btn">delete</button>
+      <input type="hidden" id="post_title" value="{{ post.title }}" />
+    </div>
+    {% endif %}
   </div>
 </div>
 <div class="row">

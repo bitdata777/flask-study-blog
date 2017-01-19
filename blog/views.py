@@ -3,6 +3,7 @@ from flask import redirect
 from flask import url_for
 from flask import flash
 from flask import request
+from flask import jsonify
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
@@ -12,6 +13,7 @@ from blog.database import db
 from blog.forms import LoginForm
 from blog.forms import SignupForm
 from blog.forms import AddForm
+from blog.forms import ModifyForm
 from blog.models import Admin
 from blog.models import Post
 from blog.utils import request_to_class
@@ -22,10 +24,11 @@ login_manager.login_view = 'login'
 
 @app.route('/')
 def index():
-    post = Post.query.order_by(Post.id.desc()).first()
+    # post = Post.query.order_by(Post.id.desc()).first()
+    post = get_post()
     if post:
-        previous = get_previous(post)
-        newer = get_newer(post)
+        previous = get_pager(post.title, 'previous')
+        newer = get_pager(post.title, 'newer')
         return render_template('post.html', post=post, previous=previous,
                                newer=newer)
     return render_template('post.html')
@@ -33,29 +36,25 @@ def index():
 
 @app.route('/<title>')
 def post(title):
-    post = Post.query.filter_by(title=title).first()
-    previous = get_previous(post)
-    newer = get_newer(post)
+    post = get_post(title)
+    previous = get_pager(title, 'previous')
+    newer = get_pager(title, 'newer')
     return render_template('post.html', post=post, previous=previous,
                            newer=newer)
 
 
-def get_offset(post, pager):
-    offset = Post.query.with_entities(Post.id).filter_by(title=post.title). \
-        first().id
+def get_post(title=None):
+    post = Post.query
+    if title:
+        post = post.filter_by(title=title)
+    return post.order_by(Post.id.desc()).first()
+
+def get_pager(title, pager):
+    offset = get_post(title).id
+    post = Post.query.order_by(Post.id.asc()).limit(1)
     if pager == 'previous':
-        return offset - 2
-    return offset
-
-
-def get_previous(post):
-    offset = get_offset(post, 'previous')
-    return Post.query.order_by(Post.id.asc()).limit(1).offset(offset).first()
-
-
-def get_newer(post):
-    offset = get_offset(post, 'newer')
-    return Post.query.order_by(Post.id.asc()).limit(1).offset(offset).first()
+        return post.offset(offset - 2).first()
+    return post.offset(offset).first()
 
 
 @app.route('/add', methods=['GET', 'POST'])
@@ -68,6 +67,38 @@ def add():
         db.commit()
         return redirect(url_for('post', title=post.title))
     return render_template('add.html', form=form)
+
+
+@app.route('/<title>/modify', methods=['GET', 'PUT'])
+@login_required
+def modify(title):
+    form = ModifyForm()
+    if request.method == 'PUT':
+        print('-'*30)
+        print(form.title.data)
+        print(form.content.data)
+        print('-'*30)
+        post = get_post(title)
+        post.title = form.title.data
+        post.content = form.content.data
+        db.add(post)
+        db.commit()
+        return jsonify(status='ok')
+    post = get_post(title)
+    form.title.data = post.title
+    form.content.data = post.content
+    return render_template('modify.html', form=form)
+
+
+@app.route('/<title>', methods=['DELETE'])
+def remove(title):
+    if title is not None:
+        post = get_post(title)
+        db.delete(post)
+        db.commit()
+        return jsonify(status='ok')
+    return jsonify(status='error')
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
