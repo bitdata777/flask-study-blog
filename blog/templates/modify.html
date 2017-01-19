@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "form_macros.html" import render_field %}}
 {% block body %}
-<form action="" method='POST'>
+<form action="" method='PUT'>
   {{ form.hidden_tag() }}
   <div class="form-group">
     {{ form.author.label }} {{ form.author(readonly="readonly", value=current_user.adminname)}}
@@ -12,8 +12,7 @@
   <div class="form-group">
   	{{ form.content.label }}
   	{{ form.content(class="form-control", row="100", id="modify-content")}}
-    {# {{ render_field(form.content, class="form-control", row="100") }} #}
   </div>
-  <a type="button" class="btn btn-success" id="modify-btn">publish</a>
+  <button type="button" class="btn btn-success" id="modify-btn">publish</button>
 </form>
 {% endblock %}

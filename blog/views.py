@@ -24,7 +24,6 @@ login_manager.login_view = 'login'
 
 @app.route('/')
 def index():
-    # post = Post.query.order_by(Post.id.desc()).first()
     post = get_post()
     if post:
         previous = get_pager(post.title, 'previous')
@@ -34,8 +33,8 @@ def index():
     return render_template('post.html')
 
 
-@app.route('/<title>')
-def post(title):
+@app.route('/<title>', methods=['GET'])
+def read(title):
     post = get_post(title)
     previous = get_pager(title, 'previous')
     newer = get_pager(title, 'newer')
@@ -44,10 +43,11 @@ def post(title):
 
 
 def get_post(title=None):
-    post = Post.query
+    post = Post.query.order_by(Post.id.desc())
     if title:
-        post = post.filter_by(title=title)
-    return post.order_by(Post.id.desc()).first()
+        return post.filter_by(title=title).first()
+    return post.first()
+
 
 def get_pager(title, pager):
     offset = get_post(title).id
@@ -65,7 +65,7 @@ def add():
         post = Post(form.title.data, form.content.data, form.author.data)
         db.add(post)
         db.commit()
-        return redirect(url_for('post', title=post.title))
+        return redirect(url_for('read', title=post.title))
     return render_template('add.html', form=form)
 
 
@@ -74,13 +74,14 @@ def add():
 def modify(title):
     form = ModifyForm()
     if request.method == 'PUT':
+        fields = request_to_class(request, 'content')
         print('-'*30)
-        print(form.title.data)
-        print(form.content.data)
+        print(fields.title)
+        print(fields.content)
         print('-'*30)
         post = get_post(title)
-        post.title = form.title.data
-        post.content = form.content.data
+        post.title = fields.title
+        post.content = fields.content
         db.add(post)
         db.commit()
         return jsonify(status='ok')
