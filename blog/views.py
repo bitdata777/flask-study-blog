@@ -29,7 +29,18 @@ def index():
 @app.route('/<title>')
 def post(title):
     post = Post.query.filter_by(title=title).first()
-    return render_template('post.html', post=post)
+
+    offset = Post.query.with_entities(Post.id).filter_by(title=post.title).\
+        first().id
+    previous = Post.query.order_by(Post.id.asc()).limit(1).offset(offset-2).\
+        first()
+    newer = Post.query.order_by(Post.id.asc()).limit(1).offset(offset).\
+        first()
+    print("-"*30)
+    print(" >>>>> ", previous)
+    print(" >>>>> ", newer)
+    print("-" * 30)
+    return render_template('post.html', post=post, previous=previous, newer=newer)
 
 
 @app.route('/add', methods=['GET', 'POST'])

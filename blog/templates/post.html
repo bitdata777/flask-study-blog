@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+{% extends "layout.html" %}
 {% block body %}
 <div class="row">
   <div class="page-header">
@@ -7,5 +7,21 @@
 </div>
 <div class="row">
   {{ post.content | markdown }}
+</div>
+<div class="row">
+  <nav>
+    <ul class="pager">
+      {% if previous.title != post.title %}
+      <li class="previous"><a href="/{{previous.title}}"><span aria-hidden="true"&larr></span> Older</a></li>
+      {% else %}
+      <li class="previous disabled"><a href="#"><span aria-hidden="true"&larr></span> Older</a></li>
+      {% endif %}
+      {% if newer %}
+      <li class="next"><a href="/{{newer.title}}"><span aria-hidden="true"&rarr></span> Newer</a></li>
+      {% else %}
+      <li class="next disabled"><a href="#"><span aria-hidden="true"&rarr></span> Newer</a></li>
+      {% endif %}
+    </ul>
+  </nav>
 </div>
 {% endblock %}
