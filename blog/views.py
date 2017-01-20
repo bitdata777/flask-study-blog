@@ -7,6 +7,7 @@ from flask import jsonify
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
+from sqlalchemy import func
 from blog import app
 from blog import login_manager
 from blog.database import db
@@ -51,10 +52,12 @@ def get_post(title=None):
 
 def get_pager(title, pager):
     offset = get_post(title).id
-    post = Post.query.order_by(Post.id.asc()).limit(1)
+    post = Post.query
     if pager == 'previous':
-        return post.offset(offset - 2).first()
-    return post.offset(offset).first()
+        return post.with_entities(func.max(Post.id), Post.title).\
+            filter(Post.id < offset).first()[1]
+    return post.with_entities(func.min(Post.id), Post.title).\
+        filter(Post.id > offset).first()[1]
 
 
 @app.route('/add', methods=['GET', 'POST'])

@@ -20,13 +20,13 @@
 <div class="row">
   <nav>
     <ul class="pager">
-      {% if previous and previous.title != post.title %}
-      <li class="previous"><a href="/{{previous.title}}"><span aria-hidden="true"&larr></span> Older</a></li>
+      {% if previous %}
+      <li class="previous"><a href="/{{previous}}"><span aria-hidden="true"&larr></span> Older</a></li>
       {% else %}
       <li class="previous disabled"><a href="#"><span aria-hidden="true"&larr></span> Older</a></li>
       {% endif %}
       {% if newer %}
-      <li class="next"><a href="/{{newer.title}}"><span aria-hidden="true"&rarr></span> Newer</a></li>
+      <li class="next"><a href="/{{newer}}"><span aria-hidden="true"&rarr></span> Newer</a></li>
       {% else %}
       <li class="next disabled"><a href="#"><span aria-hidden="true"&rarr></span> Newer</a></li>
       {% endif %}
