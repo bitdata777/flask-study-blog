@@ -46,8 +46,23 @@ class Post(Base):
     content = Column(String)
     author = Column(String)
     date = Column(DateTime, default=datetime.utcnow())
+    tag = Column(String)
 
-    def __init__(self, title, content, author):
+    def __init__(self, title, content, author, tag):
         self.title = title
         self.content = content
         self.author = author
+        self.tag = tag
+
+
+class Tag(Base):
+
+    __tablename__ = 'tag'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    hit = Column(Integer)
+
+    def __init__(self, name):
+        self.name = name
+        self.hit = 1

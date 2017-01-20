@@ -17,6 +17,7 @@ from blog.forms import AddForm
 from blog.forms import ModifyForm
 from blog.models import Admin
 from blog.models import Post
+from blog.models import Tag
 from blog.utils import request_to_class
 
 
@@ -62,10 +63,12 @@ def get_pager(title, pager):
 
 @app.route('/add', methods=['GET', 'POST'])
 @login_required
-def add():
+def add_post():
     form = AddForm()
     if form.validate_on_submit():
-        post = Post(form.title.data, form.content.data, form.author.data)
+        post = Post(form.title.data, form.content.data, form.author.data,
+                    form.tag.data)
+        add_tag(form.tag.data)
         db.add(post)
         db.commit()
         return redirect(url_for('read', title=post.title))
@@ -77,20 +80,19 @@ def add():
 def modify(title):
     form = ModifyForm()
     if request.method == 'PUT':
-        fields = request_to_class(request, 'content')
-        print('-'*30)
-        print(fields.title)
-        print(fields.content)
-        print('-'*30)
+        fields = request_to_class(request, 'content', 'tag')
         post = get_post(title)
         post.title = fields.title
         post.content = fields.content
+        modify_tag(fields.tag, post.tag)
+        post.tag = fields.tag
         db.add(post)
         db.commit()
         return jsonify(status='ok')
     post = get_post(title)
     form.title.data = post.title
     form.content.data = post.content
+    form.tag.data = post.tag
     return render_template('modify.html', form=form)
 
 
@@ -102,6 +104,64 @@ def remove(title):
         db.commit()
         return jsonify(status='ok')
     return jsonify(status='error')
+
+
+def has_tag(tag):
+    if get_tag(tag):
+        return True
+    return False
+
+
+def get_tag(tag):
+    return Tag.query.filter_by(name=tag).first()
+
+
+def tag_add_or_hitup(tag):
+    if has_tag(tag):
+        tag = get_tag(tag)
+        tag.hit += 1
+        db.add(tag)
+        db.commit()
+        return
+    tag = Tag(tag)
+    db.add(tag)
+    db.commit()
+
+
+def add_tag(tag):
+    tags = tag_to_list(tag)
+    for tag in tags:
+        tag_add_or_hitup(tag)
+
+
+def tag_to_list(tag):
+    if tag is not None:
+        return tag.replace(" ", "").split(",")
+    return list()
+
+
+def tag_remove_or_hitdown(tag):
+    tag = get_tag(tag)
+    if tag.hit == 1:
+        db.delete(tag)
+        db.commit()
+        return
+    tag.hit -= 1
+    db.add(tag)
+    db.commit()
+
+
+def modify_tag(from_tag, post_tag):
+    form_tags = set(tag_to_list(from_tag))
+    post_tag = set(tag_to_list(post_tag))
+    remove_or_down = post_tag - form_tags
+    if remove_or_down is not None:
+        for tag in remove_or_down:
+            tag_remove_or_hitdown(tag)
+    add_or_up = form_tags - post_tag
+    if add_or_up is not None:
+        for tag in add_or_up:
+            tag_add_or_hitup(tag)
 
 
 

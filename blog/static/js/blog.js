@@ -2,7 +2,7 @@ $('#modify-btn').click(function () {
     $.ajax({
         type: 'PUT',
         url: '/' + $('#modify-title').val() + '/modify',
-        data: {'title' : $('#modify-title').val(), 'content' : $('#modify-content').val()},
+        data: {'title' : $('#modify-title').val(), 'content' : $('#modify-content').val(), 'tag' : $('#modify-tag').val()},
         success: function (result) {
             if (result.status == 'ok'){
                 location.replace('/' + $('#modify-title').val());
