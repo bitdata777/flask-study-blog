@@ -1,37 +1,40 @@
 {% extends "layout.html" %}
 {% block body %}
 {% if post %}
-<div class="row">
-  <div class="page-header">
-    <h1>{{ post.title }}</h1>{{ post.date }}
-    {% if current_user.is_authenticated %}
-    <div class="btn-group" role="group" aria-label="...">
-      <a href="/{{post.title}}/modify" type="button" class="btn btn-warning btn-xs">modify</a>
-      <button type="button" class="btn btn-danger btn-xs" id="delete-btn">delete</button>
-      <input type="hidden" id="post_title" value="{{ post.title }}" />
+<div class="col-xs-12 col-sm-12 col-md-12">
+  <div class="row">
+    <div class="page-header">
+      <h1>{{ post.title }}</h1>
+      <span>{{ post.date }}</span>
+      {% if current_user.is_authenticated %}
+      <div class="btn-group" role="group" aria-label="...">
+        <a href="/{{post.title}}/modify" type="button" class="btn btn-warning btn-xs">modify</a>
+        <button type="button" class="btn btn-danger btn-xs" id="delete-btn">delete</button>
+        <input type="hidden" id="post_title" value="{{ post.title }}" />
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
   </div>
-</div>
-<div class="row">
-  {{ post.content | markdown }}
-</div>
-{% endif %}
-<div class="row">
-  <nav>
-    <ul class="pager">
-      {% if previous %}
-      <li class="previous"><a href="/{{previous}}"><span aria-hidden="true"&larr></span> Older</a></li>
-      {% else %}
-      <li class="previous disabled"><a href="#"><span aria-hidden="true"&larr></span> Older</a></li>
-      {% endif %}
-      {% if newer %}
-      <li class="next"><a href="/{{newer}}"><span aria-hidden="true"&rarr></span> Newer</a></li>
-      {% else %}
-      <li class="next disabled"><a href="#"><span aria-hidden="true"&rarr></span> Newer</a></li>
-      {% endif %}
-      </ul>
-    </nav>
+  <div class="row">
+    {{ post.content | markdown }}
+  </div>
+  {% endif %}
+  <div class="row">
+    <nav>
+      <ul class="pager">
+        {% if previous %}
+        <li class="previous"><a href="/{{previous}}"><span aria-hidden="true"&larr></span> Older</a></li>
+        {% else %}
+        <li class="previous disabled"><a href="#"><span aria-hidden="true"&larr></span> Older</a></li>
+        {% endif %}
+        {% if newer %}
+        <li class="next"><a href="/{{newer}}"><span aria-hidden="true"&rarr></span> Newer</a></li>
+        {% else %}
+        <li class="next disabled"><a href="#"><span aria-hidden="true"&rarr></span> Newer</a></li>
+        {% endif %}
+        </ul>
+      </nav>
+    </div>
   </div>
 </div>
 {% endblock %}

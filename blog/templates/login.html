@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "form_macros.html" import render_field %}}
 {% block body %}
-  <div class="container">
+  <div class="col-xs-8 col-sm-5 col-md-5">
     <form action="" method='POST'>
       {{ form.hidden_tag() }}
       <div class="form-group">
@@ -11,7 +11,9 @@
         {{ render_field(form.password, class="form-control", placeholder="password") }}
       </div>
       <div class="checkbox">
-        {{ form.remember_me }} Keep me logged in
+        <label>
+          {{ form.remember_me }} Keep me logged in
+        </label>
       </div>
       {{ form.submit(class="btn btn-primary") }}
     </form>
