@@ -1,0 +1,17 @@
+#table-category {
+    margin-top: 40px;
+}
+#table-category tr{
+    /*border-style:none;*/
+    border-width: medium;
+    border-style: solid;
+    border-color: white;
+}
+#table-category tr td{
+    border-style:none;
+}
+#table-category tr:hover{
+    border-left-width: medium;
+    border-left-style: solid;
+    border-left-color: green;
+}

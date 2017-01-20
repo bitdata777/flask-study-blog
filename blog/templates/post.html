@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block body %}
 {% if post %}
-<div class="col-xs-12 col-sm-12 col-md-12">
-  <div class="row">
+<div class="row">
+  <div class="col-xs-12 col-sm-9 col-md-9">
     <div class="page-header">
       <h1>{{ post.title }}</h1>
       <span>{{ post.date }}</span>
@@ -14,12 +14,8 @@
       </div>
       {% endif %}
     </div>
-  </div>
-  <div class="row">
     {{ post.content | markdown }}
-  </div>
-  {% endif %}
-  <div class="row">
+    {% endif %}
     <nav>
       <ul class="pager">
         {% if previous %}
@@ -32,9 +28,18 @@
         {% else %}
         <li class="next disabled"><a href="#"><span aria-hidden="true"&rarr></span> Newer</a></li>
         {% endif %}
-        </ul>
-      </nav>
-    </div>
+      </ul>
+    </nav>
+  </div>
+  <div class="col-xs-12 col-sm-3 col-md-3">
+    <table class="table table-condensed" id="table-category">
+      <tr><td>item2</td></tr>
+      <tr><td>item3</td></tr>
+      <tr><td>item4</td></tr>
+      <tr><td>item1</td></tr>
+      <tr><td>item5</td></tr>
+      <tr><td>item6</td></tr>
+    </table>
   </div>
 </div>
 {% endblock %}
