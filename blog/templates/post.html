@@ -8,7 +8,7 @@
       <span>{{ post.date }}</span>
       {% if current_user.is_authenticated %}
       <div class="btn-group" role="group" aria-label="...">
-        <a href="/{{post.title}}/modify" type="button" class="btn btn-warning btn-xs">modify</a>
+        <a href="/post/{{post.title}}/modify" type="button" class="btn btn-warning btn-xs">modify</a>
         <button type="button" class="btn btn-danger btn-xs" id="delete-btn">delete</button>
         <input type="hidden" id="post_title" value="{{ post.title }}" />
       </div>
@@ -19,18 +19,18 @@
     {% if post.tag %}
     <label>TAG</label>
     {% for tag in post.tag | tag_to_list %}
-    <a href="#" class="btn btn-link btn-xs" role="button">{{ tag }}</a>
+    <a href="/tag/{{tag}}" class="btn btn-link btn-xs" role="button">{{ tag }}</a>
     {% endfor %}
     {% endif %}
     <nav>
       <ul class="pager">
         {% if previous %}
-        <li class="previous"><a href="/{{previous}}"><span aria-hidden="true"&larr></span> Older</a></li>
+        <li class="previous"><a href="/post/{{previous}}"><span aria-hidden="true"&larr></span> Older</a></li>
         {% else %}
         <li class="previous disabled"><a href="#"><span aria-hidden="true"&larr></span> Older</a></li>
         {% endif %}
         {% if newer %}
-        <li class="next"><a href="/{{newer}}"><span aria-hidden="true"&rarr></span> Newer</a></li>
+        <li class="next"><a href="/post/{{newer}}"><span aria-hidden="true"&rarr></span> Newer</a></li>
         {% else %}
         <li class="next disabled"><a href="#"><span aria-hidden="true"&rarr></span> Newer</a></li>
         {% endif %}
@@ -41,7 +41,7 @@
     <table class="table table-condensed" id="table-category">
       {% if tags %}
       {% for tag in tags %}
-      <tr><td><a href="#" class="btn btn-link btn-xs" role="button">{{ tag.name }}</a></td></tr>
+      <tr><td><a href="/tag/{{tag.name}}" class="btn btn-link btn-xs" role="button">{{ tag.name }}</a></td></tr>
       {% endfor %}
       {% endif %}
     </table>

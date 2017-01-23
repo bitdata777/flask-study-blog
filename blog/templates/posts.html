@@ -1,6 +1,23 @@
-{% extends "index.html" %}
-{% block post %}
-<div class="page-header">
-  <h1>Example page header <small>Subtext for header</small></h1>
+{% extends "layout.html" %}
+{% block body %}
+{% if posts %}
+<div class="row">
+  <div class="col-xs-12 col-sm-9 col-md-9">
+    {% for post in posts %}
+      <div class="list-group">
+        <a href="/post/{{post.title}}" class="list-group-item">
+          <h4>{{ post.title }}</h4>
+          {% if post.tag %}
+            {% for tag in post.tag | tag_to_list %}
+              <span>{{ tag }}</span>
+            {% endfor %}
+          {% endif %}
+        </a>
+      </div>
+    {% endfor %}
+  </div>
 </div>
+{% else %}
+<span class="label label-danger">Not Found</span>
+{% endif %}
 {% endblock %}

@@ -35,7 +35,7 @@ def index():
     return render_template('post.html', tags=top_tags())
 
 
-@app.route('/<title>', methods=['GET'])
+@app.route('/post/<title>', methods=['GET'])
 def read(title):
     post = get_post(title)
     previous = get_pager(title, 'previous')
@@ -75,7 +75,7 @@ def add_post():
     return render_template('add.html', form=form)
 
 
-@app.route('/<title>/modify', methods=['GET', 'PUT'])
+@app.route('/post/<title>/modify', methods=['GET', 'PUT'])
 @login_required
 def modify(title):
     form = ModifyForm()
@@ -96,7 +96,7 @@ def modify(title):
     return render_template('modify.html', form=form)
 
 
-@app.route('/<title>', methods=['DELETE'])
+@app.route('/post/<title>', methods=['DELETE'])
 def remove(title):
     if title is not None:
         post = get_post(title)
@@ -175,7 +175,6 @@ def modify_tag(post_tag, form_tag=None):
             tag_add_or_hitup(tag)
 
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if Admin.query.count() == 0:
@@ -193,8 +192,8 @@ def login():
 
 
 @login_manager.user_loader
-def load_user(id): # 인자값은 index 값? 으로 들어옴
-    return Admin.get_by_id(id)
+def load_user(user_id): #인자값은 index 값? 으로 들어옴
+    return Admin.get_by_id(user_id)
 
 
 @app.route('/logout')
@@ -225,3 +224,24 @@ def tag_to_list_filter(tags):
     if tags is not None:
         return tags.replace(" ", "").split(",")
     return list()
+
+
+def get_posts_by_tag(tag):
+    return Post.query.filter(Post.tag.like('%' + tag + '%')). \
+        order_by(Post.id.desc()).all()
+
+@app.route('/tag/<string:tag>')
+def posts_by_tag(tag=None):
+    if tag is None:
+        return redirect(url_for('index'))
+    posts = get_posts_by_tag(tag)
+    return render_template('posts.html', posts=posts)
+
+
+@app.route('/api/tag')
+def posts_by_tag_api():
+    fields = request_to_class(request)
+    if not hasattr(fields, 'q') or not fields.q:
+        return jsonify({'result':'not found'})
+    posts = get_posts_by_tag(fields.q)
+    return jsonify({'result': 'ok'})
