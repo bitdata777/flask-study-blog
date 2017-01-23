@@ -31,8 +31,8 @@ def index():
         previous = get_pager(post.title, 'previous')
         newer = get_pager(post.title, 'newer')
         return render_template('post.html', post=post, previous=previous,
-                               newer=newer)
-    return render_template('post.html')
+                               newer=newer, tags=top_tags())
+    return render_template('post.html', tags=top_tags())
 
 
 @app.route('/<title>', methods=['GET'])
@@ -41,7 +41,7 @@ def read(title):
     previous = get_pager(title, 'previous')
     newer = get_pager(title, 'newer')
     return render_template('post.html', post=post, previous=previous,
-                           newer=newer)
+                           newer=newer, tags=top_tags())
 
 
 def get_post(title=None):
@@ -84,7 +84,7 @@ def modify(title):
         post = get_post(title)
         post.title = fields.title
         post.content = fields.content
-        modify_tag(fields.tag, post.tag)
+        modify_tag(post.tag, fields.tag)
         post.tag = fields.tag
         db.add(post)
         db.commit()
@@ -100,6 +100,7 @@ def modify(title):
 def remove(title):
     if title is not None:
         post = get_post(title)
+        modify_tag(post.tag)
         db.delete(post)
         db.commit()
         return jsonify(status='ok')
@@ -117,6 +118,8 @@ def get_tag(tag):
 
 
 def tag_add_or_hitup(tag):
+    if not tag:
+        return
     if has_tag(tag):
         tag = get_tag(tag)
         tag.hit += 1
@@ -142,18 +145,26 @@ def tag_to_list(tag):
 
 def tag_remove_or_hitdown(tag):
     tag = get_tag(tag)
-    if tag.hit == 1:
+    if tag is None:
+        return
+    tag.hit -= 1
+    if tag.hit == 0:
         db.delete(tag)
         db.commit()
         return
-    tag.hit -= 1
     db.add(tag)
     db.commit()
 
 
-def modify_tag(from_tag, post_tag):
-    form_tags = set(tag_to_list(from_tag))
+def modify_tag(post_tag, form_tag=None):
+    if form_tag is None:
+        post_tag = tag_to_list(post_tag)
+        for tag in post_tag:
+            tag_remove_or_hitdown(tag)
+        return
+
     post_tag = set(tag_to_list(post_tag))
+    form_tags = set(tag_to_list(form_tag))
     remove_or_down = post_tag - form_tags
     if remove_or_down is not None:
         for tag in remove_or_down:
@@ -203,3 +214,14 @@ def signup():
         flash('Welcome, {}! Please login.'.format(admin.adminname))
         return redirect(url_for('login'))
     return render_template("signup.html", form=form)
+
+
+def top_tags(number=10):
+    return Tag.query.order_by(Tag.hit.desc()).limit(number).all()
+
+
+@app.template_filter('tag_to_list')
+def tag_to_list_filter(tags):
+    if tags is not None:
+        return tags.replace(" ", "").split(",")
+    return list()

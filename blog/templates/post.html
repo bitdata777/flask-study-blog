@@ -16,6 +16,12 @@
     </div>
     {{ post.content | markdown }}
     {% endif %}
+    {% if post.tag %}
+    <label>TAG</label>
+    {% for tag in post.tag | tag_to_list %}
+    <a href="#" class="btn btn-link btn-xs" role="button">{{ tag }}</a>
+    {% endfor %}
+    {% endif %}
     <nav>
       <ul class="pager">
         {% if previous %}
@@ -33,12 +39,11 @@
   </div>
   <div class="col-xs-12 col-sm-3 col-md-3">
     <table class="table table-condensed" id="table-category">
-      <tr><td>item2</td></tr>
-      <tr><td>item3</td></tr>
-      <tr><td>item4</td></tr>
-      <tr><td>item1</td></tr>
-      <tr><td>item5</td></tr>
-      <tr><td>item6</td></tr>
+      {% if tags %}
+      {% for tag in tags %}
+      <tr><td><a href="#" class="btn btn-link btn-xs" role="button">{{ tag.name }}</a></td></tr>
+      {% endfor %}
+      {% endif %}
     </table>
   </div>
 </div>
